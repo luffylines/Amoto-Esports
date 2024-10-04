@@ -91,7 +91,7 @@ namespace LastAmoto {
 			this->label1->AutoSize = true;
 			this->label1->Font = (gcnew System::Drawing::Font(L"Showcard Gothic", 24, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->label1->Location = System::Drawing::Point(359, 40);
+			this->label1->Location = System::Drawing::Point(362, 49);
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(274, 40);
 			this->label1->TabIndex = 8;
@@ -99,42 +99,54 @@ namespace LastAmoto {
 			// 
 			// button1
 			// 
+			this->button1->BackColor = System::Drawing::Color::DarkOrange;
+			this->button1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
 			this->button1->Location = System::Drawing::Point(64, 126);
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(142, 43);
 			this->button1->TabIndex = 9;
 			this->button1->Text = L"New User";
-			this->button1->UseVisualStyleBackColor = true;
+			this->button1->UseVisualStyleBackColor = false;
 			this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
 			// 
 			// button2
 			// 
-			this->button2->Location = System::Drawing::Point(289, 126);
+			this->button2->BackColor = System::Drawing::Color::DarkOrange;
+			this->button2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->button2->Location = System::Drawing::Point(309, 126);
 			this->button2->Name = L"button2";
 			this->button2->Size = System::Drawing::Size(142, 43);
 			this->button2->TabIndex = 10;
 			this->button2->Text = L"Pc Time";
-			this->button2->UseVisualStyleBackColor = true;
+			this->button2->UseVisualStyleBackColor = false;
 			this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click);
 			// 
 			// button3
 			// 
-			this->button3->Location = System::Drawing::Point(537, 126);
+			this->button3->BackColor = System::Drawing::Color::DarkOrange;
+			this->button3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->button3->Location = System::Drawing::Point(542, 126);
 			this->button3->Name = L"button3";
 			this->button3->Size = System::Drawing::Size(142, 43);
 			this->button3->TabIndex = 11;
 			this->button3->Text = L"Price List";
-			this->button3->UseVisualStyleBackColor = true;
+			this->button3->UseVisualStyleBackColor = false;
 			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
 			// 
 			// button4
 			// 
-			this->button4->Location = System::Drawing::Point(786, 126);
+			this->button4->BackColor = System::Drawing::Color::DarkOrange;
+			this->button4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->button4->Location = System::Drawing::Point(768, 126);
 			this->button4->Name = L"button4";
 			this->button4->Size = System::Drawing::Size(142, 43);
 			this->button4->TabIndex = 12;
 			this->button4->Text = L"Policy";
-			this->button4->UseVisualStyleBackColor = true;
+			this->button4->UseVisualStyleBackColor = false;
 			this->button4->Click += gcnew System::EventHandler(this, &MyForm::button4_Click);
 			// 
 			// label2
@@ -186,28 +198,24 @@ namespace LastAmoto {
 		Application::Exit(); // Close the application
 	}
 private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {	
-	DeleteForm^ Newn = gcnew DeleteForm();
-	this->Hide(); // Optionally hide the login form
-	Newn->ShowDialog(); // Show the main form as a dialog
-	this->Show();
+	this->Hide();
+	DeleteForm^ next1 = gcnew DeleteForm(this);
+	next1->ShowDialog();
 }
 private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
-	TimeForm^ Newn1 = gcnew TimeForm();
-	this->Hide(); // Optionally hide the login form
-	Newn1->ShowDialog(); // Show the main form as a dialog
-	this->Show();
+	this->Hide();
+	TimeForm^ next2 = gcnew TimeForm(this);
+	next2->ShowDialog();
 }
 private: System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
-	PriceForm^ New2n = gcnew PriceForm();
-	this->Hide(); // Optionally hide the login form
-	New2n->ShowDialog(); // Show the main form as a dialog
-	this->Show();
+	this->Hide();
+	PriceForm^ next3 = gcnew PriceForm(this);
+	next3->ShowDialog();
 }
 private: System::Void button4_Click(System::Object^ sender, System::EventArgs^ e) {
-	PolicyForm^ Newn3 = gcnew PolicyForm();
-	this->Hide(); // Optionally hide the login form
-	Newn3->ShowDialog(); // Show the main form as a dialog
-	this->Show();
+	this->Hide();
+	PolicyForm^ nextPage = gcnew PolicyForm(this);
+	nextPage->ShowDialog();
 }
 };
 }
