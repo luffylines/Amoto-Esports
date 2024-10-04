@@ -1,6 +1,7 @@
 #pragma once
 #include "MyForm.h"
 
+
 namespace LastAmoto {
 
 	using namespace System;
@@ -44,6 +45,7 @@ namespace LastAmoto {
 
 	private: System::Windows::Forms::Label^ label3;
 	private: System::Windows::Forms::PictureBox^ pictureBox1;
+
 	protected:
 
 	private:

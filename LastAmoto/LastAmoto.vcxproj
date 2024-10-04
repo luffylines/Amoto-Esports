@@ -81,6 +81,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies />
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>main</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -111,9 +113,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data">
-      <HintPath>..\..\..\Health Care\MySql.Data.dll</HintPath>
-    </Reference>
+    <Reference Include="MySql.Data, Version=8.0.16.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
