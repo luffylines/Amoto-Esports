@@ -116,6 +116,9 @@
     <Reference Include="MySql.Data, Version=8.0.16.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SqlClient">
+      <HintPath>..\..\..\Health Wisely\HealthCare-Plus-main\Health Care\packages\System.Data.SqlClient.4.8.3\runtimes\win\lib\net46\System.Data.SqlClient.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -130,6 +133,7 @@
     <ClCompile Include="PolicyForm.cpp" />
     <ClCompile Include="PriceForm.cpp" />
     <ClCompile Include="Prog.cpp" />
+    <ClCompile Include="Reg.cpp" />
     <ClCompile Include="TimeForm.cpp" />
     <ClCompile Include="UpdateForm.cpp" />
   </ItemGroup>
@@ -150,6 +154,9 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Prog.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="Reg.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="TimeForm.h">
@@ -177,6 +184,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Prog.resx">
       <DependentUpon>Prog.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reg.resx">
+      <DependentUpon>Reg.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TimeForm.resx">
       <DependentUpon>TimeForm.h</DependentUpon>

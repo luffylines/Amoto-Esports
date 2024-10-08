@@ -10,6 +10,7 @@ namespace LastAmoto {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace MySql::Data::MySqlClient;
 
 	/// <summary>
 	/// Summary for log
@@ -74,8 +75,10 @@ namespace LastAmoto {
 			// 
 			// button1
 			// 
-			this->button1->BackColor = System::Drawing::SystemColors::AppWorkspace;
-			this->button1->Location = System::Drawing::Point(490, 339);
+			this->button1->BackColor = System::Drawing::Color::Lime;
+			this->button1->Font = (gcnew System::Drawing::Font(L"Showcard Gothic", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->button1->Location = System::Drawing::Point(502, 328);
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(206, 45);
 			this->button1->TabIndex = 0;
@@ -166,6 +169,7 @@ namespace LastAmoto {
 			this->Controls->Add(this->button1);
 			this->Name = L"log";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
+			this->Load += gcnew System::EventHandler(this, &log::log_Load);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
@@ -177,7 +181,7 @@ namespace LastAmoto {
 		String^ passwordInput = pass->Text;
 
 		// Simple validation example
-		if (usernameInput == "admin" && passwordInput == "password") {
+		if (usernameInput == "admin" && passwordInput == "123") {
 			MessageBox::Show("Login Successful!", "Success");
 
 			// Create and show the main form
@@ -192,6 +196,8 @@ namespace LastAmoto {
 	}
 private: System::Void pictureBox1_Click(System::Object^ sender, System::EventArgs^ e) {
 	Application::Exit(); // Close the application
+}
+private: System::Void log_Load(System::Object^ sender, System::EventArgs^ e) {
 }
 };
 }

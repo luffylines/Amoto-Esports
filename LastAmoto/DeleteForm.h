@@ -10,6 +10,132 @@ namespace LastAmoto {
 	using namespace System::Drawing;
 	using namespace MySql::Data::MySqlClient;
 
+	public ref class Database
+	{
+	private:
+		String^ connectionString = "server=localhost;database=amoto;user=root;password=;convert zero datetime=True;";
+
+	public:
+		MySqlConnection^ GetConnection()
+		{
+			return gcnew MySqlConnection(connectionString);
+		}
+
+		void OpenConnection(MySqlConnection^ connection)
+		{
+			try
+			{
+				connection->Open();
+				Console::WriteLine("Database connection established successfully.");
+			}
+			catch (Exception^ ex)
+			{
+				Console::WriteLine("Error: " + ex->Message);
+			}
+		}
+
+		void InsertUser(String^ username, String^ password, String^ price, String^ hours)
+		{
+			MySqlConnection^ connection = GetConnection();
+			OpenConnection(connection);
+			String^ query = "INSERT INTO adduser (username, password, price, hours) VALUES (@username, @password, @price, @hours)";
+			MySqlCommand^ cmd = gcnew MySqlCommand(query, connection);
+			cmd->Parameters->AddWithValue("@username", username);
+			cmd->Parameters->AddWithValue("@password", password);
+			cmd->Parameters->AddWithValue("@price", price);
+			cmd->Parameters->AddWithValue("@hours", hours);
+
+			try
+			{
+				cmd->ExecuteNonQuery();
+				Console::WriteLine("User inserted successfully.");
+			}
+			catch (Exception^ ex)
+			{
+				Console::WriteLine("Error: " + ex->Message);
+			}
+			finally
+			{
+				connection->Close();
+			}
+		}
+
+		DataTable^ LoadUsers()
+		{
+			DataTable^ dataTable = gcnew DataTable();
+			MySqlConnection^ connection = GetConnection();
+			OpenConnection(connection);
+
+			String^ query = "SELECT username, password, price, hours FROM adduser";
+			MySqlCommand^ cmd = gcnew MySqlCommand(query, connection);
+
+			try
+			{
+				MySqlDataAdapter^ adapter = gcnew MySqlDataAdapter(cmd);
+				adapter->Fill(dataTable);
+			}
+			catch (Exception^ ex)
+			{
+				Console::WriteLine("Error: " + ex->Message);
+			}
+			finally
+			{
+				connection->Close();
+			}
+
+			return dataTable;
+		}
+
+		void UpdateUser(String^ username, String^ password, String^ price, String^ hours)
+		{
+			MySqlConnection^ connection = GetConnection();
+			OpenConnection(connection);
+			String^ query = "UPDATE adduser SET password=@password, price=@price, hours=@hours WHERE username=@username";
+			MySqlCommand^ cmd = gcnew MySqlCommand(query, connection);
+			cmd->Parameters->AddWithValue("@username", username);
+			cmd->Parameters->AddWithValue("@password", password);
+			cmd->Parameters->AddWithValue("@price", price);
+			cmd->Parameters->AddWithValue("@hours", hours);
+
+			try
+			{
+				cmd->ExecuteNonQuery();
+				Console::WriteLine("User updated successfully.");
+			}
+			catch (Exception^ ex)
+			{
+				Console::WriteLine("Error: " + ex->Message);
+			}
+			finally
+			{
+				connection->Close();
+			}
+		}
+
+		void DeleteUser(String^ username)
+		{
+			MySqlConnection^ connection = GetConnection();
+			OpenConnection(connection);
+			String^ query = "DELETE FROM adduser WHERE username=@username";
+			MySqlCommand^ cmd = gcnew MySqlCommand(query, connection);
+			cmd->Parameters->AddWithValue("@username", username);
+
+			try
+			{
+				cmd->ExecuteNonQuery();
+				Console::WriteLine("User deleted successfully.");
+			}
+			catch (Exception^ ex)
+			{
+				Console::WriteLine("Error: " + ex->Message);
+			}
+			finally
+			{
+				connection->Close();
+			}
+		}
+	};
+
 	/// <summary>
 	/// Summary for DeleteForm
 	/// </summary>
@@ -17,9 +143,18 @@ namespace LastAmoto {
 	{
 	public:
 		Form^ newuser;
+		Database^ db;
+		System::Windows::Forms::Timer^ countdownTimer;
+		DateTime endTime; // The time when the countdown ends
+		TimeSpan remainingTime; // Remaining time for the countdown
+		bool isPaused;
+
 		DeleteForm(void)
 		{
 			InitializeComponent();
+			db = gcnew Database();
+			LoadData();
+			
 			//
 			//TODO: Add the constructor code here
 			//
@@ -28,6 +163,8 @@ namespace LastAmoto {
 		{
 			newuser = next1;
 			InitializeComponent();
+			db = gcnew Database();
+			LoadData();
 			//
 			//TODO: Add the constructor code here
 			//
@@ -44,6 +181,32 @@ namespace LastAmoto {
 				delete components;
 			}
 		}
+	private:
+		void LoadData()
+		{
+			DataTable^ users = db->LoadUsers();
+			dataGridView1->AutoGenerateColumns = false;
+
+			// Clear existing columns (if any)
+			dataGridView1->Columns->Clear();
+
+			// Create and add columns
+			dataGridView1->Columns->Add("username", "Username");
+			dataGridView1->Columns["username"]->DataPropertyName = "username";
+
+			dataGridView1->Columns->Add("password", "Password");
+			dataGridView1->Columns["password"]->DataPropertyName = "password";
+
+			dataGridView1->Columns->Add("price", "Price");
+			dataGridView1->Columns["price"]->DataPropertyName = "price";
+
+			dataGridView1->Columns->Add("hours", "Hours");
+			dataGridView1->Columns["hours"]->DataPropertyName = "hours";
+
+			dataGridView1->DataSource = users;
+		}
+
+
 	private: System::Windows::Forms::PictureBox^ pictureBox1;
 	private: System::Windows::Forms::PictureBox^ pictureBox2;
 	private: System::Windows::Forms::DataGridView^ dataGridView1;
@@ -59,7 +222,6 @@ namespace LastAmoto {
 	private: System::Windows::Forms::TextBox^ txtpass;
 	private: System::Windows::Forms::TextBox^ txtprice;
 	private: System::Windows::Forms::TextBox^ txthours;
-
 	protected:
 
 	private:
@@ -122,10 +284,20 @@ namespace LastAmoto {
 			// 
 			// dataGridView1
 			// 
-			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-			this->dataGridView1->Location = System::Drawing::Point(528, 164);
+			this->dataGridView1->AllowUserToAddRows = false;
+			this->dataGridView1->AllowUserToDeleteRows = false;
+			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::DisableResizing;
+			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(0) {
+
+			});
+			this->dataGridView1->Location = System::Drawing::Point(530, 146);
 			this->dataGridView1->Name = L"dataGridView1";
-			this->dataGridView1->Size = System::Drawing::Size(434, 331);
+			this->dataGridView1->ReadOnly = true;
+			this->dataGridView1->RowHeadersBorderStyle = System::Windows::Forms::DataGridViewHeaderBorderStyle::None;
+			this->dataGridView1->RowHeadersVisible = false;
+			this->dataGridView1->RowHeadersWidthSizeMode = System::Windows::Forms::DataGridViewRowHeadersWidthSizeMode::DisableResizing;
+			this->dataGridView1->SelectionMode = System::Windows::Forms::DataGridViewSelectionMode::FullRowSelect;
+			this->dataGridView1->Size = System::Drawing::Size(451, 316);
 			this->dataGridView1->TabIndex = 13;
 			this->dataGridView1->CellContentClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &DeleteForm::dataGridView1_CellContentClick);
 			// 
@@ -186,38 +358,43 @@ namespace LastAmoto {
 			// 
 			// button1
 			// 
+			this->button1->BackColor = System::Drawing::Color::Lime;
 			this->button1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->button1->Location = System::Drawing::Point(198, 426);
+			this->button1->ForeColor = System::Drawing::SystemColors::ControlText;
+			this->button1->Location = System::Drawing::Point(154, 426);
 			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(75, 36);
+			this->button1->Size = System::Drawing::Size(107, 36);
 			this->button1->TabIndex = 19;
 			this->button1->Text = L"Add";
-			this->button1->UseVisualStyleBackColor = true;
+			this->button1->UseVisualStyleBackColor = false;
 			this->button1->Click += gcnew System::EventHandler(this, &DeleteForm::button1_Click);
 			// 
 			// button2
 			// 
+			this->button2->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(128)), static_cast<System::Int32>(static_cast<System::Byte>(128)),
+				static_cast<System::Int32>(static_cast<System::Byte>(255)));
 			this->button2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->button2->Location = System::Drawing::Point(289, 426);
+			this->button2->Location = System::Drawing::Point(291, 426);
 			this->button2->Name = L"button2";
 			this->button2->Size = System::Drawing::Size(92, 36);
 			this->button2->TabIndex = 20;
 			this->button2->Text = L"Update";
-			this->button2->UseVisualStyleBackColor = true;
+			this->button2->UseVisualStyleBackColor = false;
 			this->button2->Click += gcnew System::EventHandler(this, &DeleteForm::button2_Click);
 			// 
 			// button3
 			// 
+			this->button3->BackColor = System::Drawing::Color::Red;
 			this->button3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->button3->Location = System::Drawing::Point(398, 426);
+			this->button3->Location = System::Drawing::Point(415, 426);
 			this->button3->Name = L"button3";
-			this->button3->Size = System::Drawing::Size(75, 36);
+			this->button3->Size = System::Drawing::Size(86, 36);
 			this->button3->TabIndex = 21;
 			this->button3->Text = L"Delete";
-			this->button3->UseVisualStyleBackColor = true;
+			this->button3->UseVisualStyleBackColor = false;
 			this->button3->Click += gcnew System::EventHandler(this, &DeleteForm::button3_Click);
 			// 
 			// txtuser
@@ -297,15 +474,50 @@ namespace LastAmoto {
 
 	}
 	private: System::Void DeleteForm_Load(System::Object^ sender, System::EventArgs^ e) {
-
+		LoadData(); // Load users when form loads
 	}
 private: System::Void dataGridView1_CellContentClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
 }
 private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
+	String^ username = txtuser->Text;
+	String^ password = txtpass->Text;
+	String^ price = txtprice->Text;
+	String^ hours = txthours->Text;
+
+	db->InsertUser(username, password, price, hours);
+	LoadData(); // Refresh the grid
 }
 private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (dataGridView1->SelectedRows->Count > 0)
+	{
+		// Get the username from the selected row
+		String^ username = dataGridView1->SelectedRows[0]->Cells["username"]->Value->ToString();
+		String^ password = txtpass->Text;
+		String^ price = txtprice->Text;
+		String^ hours = txthours->Text;
+
+		// Update the user by username instead of id
+		db->UpdateUser(username, password, price, hours);
+		LoadData(); // Refresh the grid
+	}
+	else
+	{
+		MessageBox::Show("Please select a user to update.");
+	}
 }
+
 private: System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (dataGridView1->SelectedRows->Count > 0)
+	{
+		// Get the username from the selected row
+		String^ username = dataGridView1->SelectedRows[0]->Cells["username"]->Value->ToString();
+		db->DeleteUser(username); // Pass the username to DeleteUser
+		LoadData(); // Refresh the grid
+	}
+	else
+	{
+		MessageBox::Show("Please select a user to delete.");
+	}
 }
 };
 }
